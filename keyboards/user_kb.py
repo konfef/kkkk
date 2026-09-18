@@ -7,8 +7,8 @@ from config import config
 
 
 def main_menu_kb(is_admin: bool = False) -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
     if not is_admin:
-        builder = ReplyKeyboardBuilder()
         builder.row(KeyboardButton(text="📅 Записаться"))
         builder.row(KeyboardButton(text="💅 Прайсы"), KeyboardButton(text="🖼 Портфолио"))
         builder.row(KeyboardButton(text="❌ Отменить запись"))
