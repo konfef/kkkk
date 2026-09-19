@@ -5,6 +5,7 @@ class BookingStates(StatesGroup):
     """Состояния процесса записи клиента."""
     choosing_date = State()
     choosing_time = State()
+    choosing_service = State()
     entering_name = State()
     entering_phone = State()
     confirming = State()
