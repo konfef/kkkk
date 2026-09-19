@@ -4,6 +4,14 @@ from aiogram.types import (
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from config import config
+SERVICES = [
+    "Френч — 1000₽",
+    "Квадрат — 500₽",
+]
+
+def services_kb() -> InlineKeyboardMarkup:
+    buttons = [[InlineKeyboardButton(text=s, callback_data=f"service:{s}")] for s in SERVICES]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
 def main_menu_kb(is_admin: bool = False) -> ReplyKeyboardMarkup:
