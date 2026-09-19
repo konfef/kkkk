@@ -139,10 +139,22 @@ async def booking_choose_time(callback: CallbackQuery, state: FSMContext):
 
     await state.update_data(slot_id=slot_id, time=slot["time"])
     await callback.message.edit_text(
-        f"Дата: <b>{date_str}</b>\nВремя: <b>{slot['time']}</b>\n\nКак вас зовут?"
+        f"Дата: <b>{date_str}</b>\nВремя: <b>{slot['time']}</b>\n\nВыберите услугу:",
+        reply_markup=services_kb()
+    )
+    await state.set_state(BookingStates.choosing_service)
+    await callback.answer()
+
+@router.callback_query(BookingStates.choosing_service, F.data.startswith("service:"))
+async def booking_choose_service(callback: CallbackQuery, state: FSMContext):
+    service = callback.data.split("service:")[1]
+    await state.update_data(service=service)
+    data = await state.get_data()
+    await callback.message.edit_text(
+        f"Дата: <b>{data['date']}</b>\nВремя: <b>{data['time']}</b>\nУслуга: <b>{service}</b>\n\nКак вас зовут?"
     )
     await state.set_state(BookingStates.entering_name)
-
+    await callback.answer()
 
 @router.message(BookingStates.entering_name)
 async def booking_enter_name(message: Message, state: FSMContext):
@@ -177,6 +189,7 @@ async def _save_phone_and_confirm(message: Message, state: FSMContext, phone: st
         "<b>Проверьте данные записи:</b>\n\n"
         f"📅 Дата: <b>{data['date']}</b>\n"
         f"🕐 Время: <b>{data['time']}</b>\n"
+        f"💅 Услуга: <b>{data['service']}</b>\n"
         f"🙋 Имя: <b>{data['client_name']}</b>\n"
         f"📞 Телефон: <b>{phone}</b>"
     )
@@ -235,12 +248,16 @@ async def booking_confirm(callback: CallbackQuery, state: FSMContext, bot: Bot, 
     await state.clear()
 
     # уведомление администратору
+    user = callback.from_user
+    telegram = f"@{user.username}" if user.username else str(user.id)
+
     admin_text = (
         "🆕 <b>Новая запись</b>\n\n"
         f"👤 {data['client_name']}\n"
         f"📞 {data['phone']}\n"
+        f"💅 Услуга: <b>{data['service']}</b>\n"
         f"📅 {data['date']} в {data['time']}\n"
-        f"Telegram: @{callback.from_user.username or callback.from_user.id}"
+        f"Telegram: {telegram}"
     )
     try:
         await bot.send_message(config.ADMIN_ID, admin_text)
