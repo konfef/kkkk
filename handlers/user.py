@@ -15,6 +15,7 @@ from database import db
 from states.states import BookingStates
 from keyboards.user_kb import (
     main_menu_kb, times_kb, confirm_kb, subscribe_kb, cancel_booking_confirm_kb,
+    services_kb,
 )
 from keyboards.calendar_kb import build_calendar
 from utils.subscription import is_subscribed
